@@ -14,19 +14,17 @@ export default function ColorForm({
   const [hex, setHex] = useState(initialData.hex);
   const [contrastText, setContrastText] = useState(initialData.contrastText);
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    const newColor = {
+  function handleSubmit() {
+    onSubmitColor({
       id: nanoid(),
       role: role,
       hex: hex,
       contrastText: contrastText,
-    };
-    onSubmitColor(newColor);
+    });
   }
 
   return (
-    <form className="color-form" onSubmit={handleSubmit}>
+    <div className="color-form">
       <label htmlFor="role">
         Role
         <br />
@@ -59,7 +57,7 @@ export default function ColorForm({
         />
       </label>
       <br />
-      <button>ADD COLOR</button>
-    </form>
+      <button onClick={handleSubmit}>ADD COLOR</button>
+    </div>
   );
 }
