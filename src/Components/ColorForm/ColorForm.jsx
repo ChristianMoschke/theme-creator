@@ -1,63 +1,55 @@
-import { useState } from "react";
-import { nanoid } from "nanoid";
 import ColorInput from "../ColorInput/ColorInput";
 
 export default function ColorForm({
-  onSubmitColor,
-  initialData = {
-    role: "some color",
-    hex: "#123456",
-    contrastText: "#ffffff",
-  },
+  onAddColor,
+  showEdit,
+  initialData,
+  onExitEdit,
 }) {
-  const [role, setRole] = useState(initialData.role);
-  const [hex, setHex] = useState(initialData.hex);
-  const [contrastText, setContrastText] = useState(initialData.contrastText);
+  function handleSubmit(event) {
+    event.preventDefault();
 
-  function handleSubmit() {
-    onSubmitColor({
-      id: nanoid(),
-      role: role,
-      hex: hex,
-      contrastText: contrastText,
-    });
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData);
+
+    if (showEdit) {
+      data.id = initialData.id;
+    }
+    onAddColor(data);
+
+    if (showEdit) {
+      onExitEdit();
+    }
   }
 
   return (
-    <div className="color-form">
+    <form onSubmit={handleSubmit}>
       <label htmlFor="role">
         Role
         <br />
         <input
-          type="text"
           id="role"
           name="role"
-          value={role}
-          onChange={(event) => setRole(event.target.value)}
-        />
+          type="text"
+          defaultValue={initialData ? initialData.role : "Color Role"}
+        ></input>
       </label>
       <br />
       <label htmlFor="hex">
         Hex
-        <br />
         <ColorInput
           id="hex"
-          defaultValue={hex}
-          onChange={(value) => setHex(value)}
+          defaultValue={initialData ? initialData.hex : "#000000"}
         />
       </label>
-      <br />
-      <label htmlFor="contrastText">
-        Contrast Text
-        <br />
+      <label htmlFor="contrast">
+        Contrast text
         <ColorInput
           id="contrastText"
-          defaultValue={contrastText}
-          onChange={(value) => setContrastText(value)}
+          defaultValue={initialData ? initialData.contrastText : "#abcdef"}
         />
       </label>
-      <br />
-      <button onClick={handleSubmit}>ADD COLOR</button>
-    </div>
+      <button type="submit"> {showEdit ? "Update Color" : "Add Color"}</button>
+    </form>
   );
 }
