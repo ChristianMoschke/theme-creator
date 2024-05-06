@@ -1,20 +1,20 @@
 import "./Color.css";
 import { useState } from "react";
+import ColorForm from "../ColorForm/ColorForm";
 
-export default function Color({ onDeleteColor, color }) {
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+export default function Color({ color, onDeleteColor, onEditColor }) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
 
-  function onDelete() {
-    setShowDeleteConfirmation(true);
+  function handleConfirmDelete() {
+    if (confirmDelete === false) {
+      setConfirmDelete(true);
+    } else {
+      setConfirmDelete(false);
+    }
   }
-
-  function onCancelDelete() {
-    setShowDeleteConfirmation(false);
-  }
-
-  function onConfirmDelete(id) {
-    onDeleteColor(id);
-    setShowDeleteConfirmation(false);
+  function handleExitEdit() {
+    setShowEdit(false);
   }
 
   return (
@@ -28,18 +28,39 @@ export default function Color({ onDeleteColor, color }) {
       <h3 className="color-card-headline">{color.hex}</h3>
       <h4>{color.role}</h4>
       <p>contrast: {color.contrastText}</p>
-
-      <div>
-        {showDeleteConfirmation ? (
-          <p className="color-card-highlight">
-            Confirm delete?
-            <button onClick={() => onCancelDelete()}>Cancel</button>
-            <button onClick={() => onConfirmDelete(color.id)}>Confirm</button>
-          </p>
-        ) : (
-          <button onClick={() => onDelete()}>Delete</button>
-        )}
-      </div>
+      <br />
+      {!confirmDelete && !showEdit && (
+        <button
+          onClick={() => {
+            handleConfirmDelete();
+          }}
+        >
+          Delete
+        </button>
+      )}
+      {confirmDelete && (
+        <div className="color-card-highlight">
+          Really Delete?
+          <button onClick={() => setConfirmDelete(false)}>Cancel</button>
+          <button onClick={() => onDeleteColor(color.id)}>Delete</button>
+        </div>
+      )}
+      {!showEdit && (
+        <>
+          <button onClick={() => setShowEdit(true)}>Edit</button>
+        </>
+      )}
+      {showEdit && (
+        <>
+          <ColorForm
+            onAddColor={onEditColor}
+            showEdit={showEdit}
+            initialData={color}
+            onExitEdit={handleExitEdit}
+          />
+          <button onClick={() => setShowEdit(false)}>Cancel</button>
+        </>
+      )}
     </div>
   );
 }
